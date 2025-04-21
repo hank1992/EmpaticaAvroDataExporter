@@ -53,6 +53,11 @@ def exportAccelerometer(data, device, date):
     Exports accelerometer data to a CSV file.
     """
     acc = data["rawData"]["accelerometer"]
+
+    # To prevent divide by 0
+    if acc["samplingFrequency"] == 0:
+        return
+
     timestamp = [round(acc["timestampStart"] + i * (1e6 / acc["samplingFrequency"]))
                  for i in range(len(acc["x"]))]
     # Convert ADC counts in g
@@ -128,6 +133,11 @@ def exportEda(data, device, date):
     Exports EDA (Electrodermal Activity) data to a CSV file.
     """
     eda = data["rawData"]["eda"]
+
+    # To prevent divide by 0
+    if eda["samplingFrequency"] == 0:
+        return
+
     timestamp = [round(eda["timestampStart"] + i * (1e6 / eda["samplingFrequency"]))
                  for i in range(len(eda["values"]))]
 
@@ -159,6 +169,11 @@ def exportTemperature(data, device, date):
     Exports temperature data to a CSV file.
     """
     tmp = data["rawData"]["temperature"]
+
+    # To prevent divide by 0
+    if tmp["samplingFrequency"] == 0:
+        return
+    
     timestamp = [round(tmp["timestampStart"] + i * (1e6 / tmp["samplingFrequency"]))
                  for i in range(len(tmp["values"]))]
 
@@ -222,6 +237,11 @@ def exportBVP(data, device, date):
     Exports BVP (Blood Volume Pulse) data to a CSV file.
     """
     bvp = data["rawData"]["bvp"]
+
+    # To prevent divide by 0
+    if bvp["samplingFrequency"] == 0:
+        return
+    
     timestamp = [round(bvp["timestampStart"] + i * (1e6 / bvp["samplingFrequency"]))
                  for i in range(len(bvp["values"]))]
 
@@ -281,6 +301,11 @@ def exportSteps(data, device, date):
     Exports steps data to a CSV file.
     """
     steps = data["rawData"]["steps"]
+    
+    # To prevent divide by 0
+    if steps["samplingFrequency"] == 0:
+        return
+    
     timestamp = [round(steps["timestampStart"] + i * (1e6 / steps["samplingFrequency"]))
                  for i in range(len(steps["values"]))]
 
