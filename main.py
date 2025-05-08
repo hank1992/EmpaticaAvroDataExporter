@@ -5,6 +5,7 @@ import json
 import csv
 import os
 import glob
+import pandas as pd
 # %%
 '''Output directory for CSV files'''
 output_dir = "Output"
@@ -60,6 +61,11 @@ def exportAccelerometer(data, device, date):
 
     timestamp = [round(acc["timestampStart"] + i * (1e6 / acc["samplingFrequency"]))
                  for i in range(len(acc["x"]))]
+
+    formatted_time = pd.to_datetime(
+        timestamp, unit='us').strftime('%Y-%m-%d %H:%M:%S.%f')
+    acc["formatted_time"] = formatted_time
+
     # Convert ADC counts in g
     delta_physical = acc["imuParams"]["physicalMax"] - \
         acc["imuParams"]["physicalMin"]
@@ -85,11 +91,12 @@ def exportAccelerometer(data, device, date):
         # If the file does not exist, write the header first
         if not file_exists:
             # Writing header
-            writer.writerow(["unix_timestamp", "x", "y", "z"])
+            writer.writerow(
+                ["unix_timestamp", "x", "y", "z", "formatted_time"])
 
         # Append the new rows
-        writer.writerows([[ts, x, y, z]
-                         for ts, x, y, z in zip(timestamp, x_g, y_g, z_g)])
+        writer.writerows([[ts, x, y, z, formatted_time]
+                         for ts, x, y, z, formatted_time in zip(timestamp, x_g, y_g, z_g, formatted_time)])
 
 
 def exportGyroscope(data, device, date):
@@ -173,7 +180,7 @@ def exportTemperature(data, device, date):
     # To prevent divide by 0
     if tmp["samplingFrequency"] == 0:
         return
-    
+
     timestamp = [round(tmp["timestampStart"] + i * (1e6 / tmp["samplingFrequency"]))
                  for i in range(len(tmp["values"]))]
 
@@ -241,7 +248,7 @@ def exportBVP(data, device, date):
     # To prevent divide by 0
     if bvp["samplingFrequency"] == 0:
         return
-    
+
     timestamp = [round(bvp["timestampStart"] + i * (1e6 / bvp["samplingFrequency"]))
                  for i in range(len(bvp["values"]))]
 
@@ -301,11 +308,11 @@ def exportSteps(data, device, date):
     Exports steps data to a CSV file.
     """
     steps = data["rawData"]["steps"]
-    
+
     # To prevent divide by 0
     if steps["samplingFrequency"] == 0:
         return
-    
+
     timestamp = [round(steps["timestampStart"] + i * (1e6 / steps["samplingFrequency"]))
                  for i in range(len(steps["values"]))]
 
